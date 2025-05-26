@@ -1,0 +1,36 @@
+## Visual Studio / .NET Core
+**/[Bb]in/
+**/[Oo]bj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+*DS_Store
+**/[Tt]humbs.db 
+project.lock.json
+# project.assets.json # Usually good to commit this one
+packages/
+!packages/repositories.config
+**/[Dd]ebug/
+**/[Rr]elease/
+
+# User-specific files
+*.DotSettings.user
+ExchangeShopApp/ExchangeShopApp.csproj.user # Specifically ignore this
+
+# Environment files
+.env
+
+# Rider
+.idea/
+*.iml
+
+# SQL Server Management Studio
+*.ssmssln
+*.ssms RestartedFiles
+*.sqlsuo
+
+# Secrets (if any, better to use user secrets or Azure Key Vault in real apps)
+secrets.json 
+# appsettings.Development.json # If it contains secrets and shouldn't be shared

@@ -35,9 +35,7 @@ namespace ExchangeShopApp
         private void ManageCurrenciesForm_Load(object sender, EventArgs e)
         {
             LoadCurrencies();
-            ClearFormFields(); // Good practice to start with a clean slate for inputs
-            // dgvCurrencies.ClearSelection(); // Optional: Deselect any auto-selected row
-            // btnDelete.Enabled = false; // Initially disable delete until a row is selected
+            ClearFormFields();
         }
 
         private void LoadCurrencies()
@@ -67,15 +65,8 @@ namespace ExchangeShopApp
                     }
                 }
 
-                dgvCurrencies.DataSource = null; // Clear previous data
-                dgvCurrencies.AutoGenerateColumns = false; // We've defined columns in the designer
-
-                // Ensure your DataGridView column DataPropertyNames match your Currency entity properties
-                // These should have been set in ManageCurrenciesForm.Designer.cs:
-                // colCurrencyID.DataPropertyName = "CurrencyID";
-                // colCurrencyCode.DataPropertyName = "CurrencyCode";
-                // colCurrencyName.DataPropertyName = "CurrencyName";
-                // colCreatedAt.DataPropertyName = "CreatedAt";
+                dgvCurrencies.DataSource = null;
+                dgvCurrencies.AutoGenerateColumns = false; 
 
                 dgvCurrencies.DataSource = currencies;
             }
@@ -95,12 +86,10 @@ namespace ExchangeShopApp
                 txtCurrencyName.Text = selectedRow.Cells["colCurrencyName"].Value?.ToString() ?? string.Empty;
 
                 btnDelete.Enabled = true;
-                btnSave.Text = "Update"; // Change Save button text to Update
+                btnSave.Text = "Update";
             }
             else
             {
-                // If no row is selected, or selection is cleared
-                // ClearFormFields(); // Optionally clear fields when selection is lost
                 btnDelete.Enabled = false;
                 btnSave.Text = "Save";
             }
@@ -111,10 +100,10 @@ namespace ExchangeShopApp
             txtCurrencyID.Clear();
             txtCurrencyCode.Clear();
             txtCurrencyName.Clear();
-            txtCurrencyCode.Focus(); // Set focus to the first editable field
-            btnDelete.Enabled = false; // Disable delete when fields are cleared for a new entry
-            btnSave.Text = "Save"; // Reset Save button text
-            dgvCurrencies.ClearSelection(); // Deselect any row in the grid
+            txtCurrencyCode.Focus(); 
+            btnDelete.Enabled = false; 
+            btnSave.Text = "Save"; 
+            dgvCurrencies.ClearSelection();
         }
 
 
@@ -125,14 +114,13 @@ namespace ExchangeShopApp
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            // --- Input Validation ---
             if (string.IsNullOrWhiteSpace(txtCurrencyCode.Text))
             {
                 MessageBox.Show("Currency Code cannot be empty.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtCurrencyCode.Focus();
                 return;
             }
-            if (txtCurrencyCode.Text.Length != 3) // Basic validation for 3-letter code
+            if (txtCurrencyCode.Text.Length != 3)
             {
                 MessageBox.Show("Currency Code must be 3 characters long (e.g., USD).", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtCurrencyCode.Focus();
@@ -145,9 +133,9 @@ namespace ExchangeShopApp
                 return;
             }
 
-            string currencyCode = txtCurrencyCode.Text.ToUpper(); // Store as uppercase
+            string currencyCode = txtCurrencyCode.Text.ToUpper();
             string currencyName = txtCurrencyName.Text;
-            bool isUpdate = !string.IsNullOrWhiteSpace(txtCurrencyID.Text); // If ID field has a value, it's an update
+            bool isUpdate = !string.IsNullOrWhiteSpace(txtCurrencyID.Text);
 
             try
             {
@@ -159,15 +147,12 @@ namespace ExchangeShopApp
 
                     if (isUpdate)
                     {
-                        // --- UPDATE existing currency ---
                         query = "UPDATE Currencies SET CurrencyCode = @CurrencyCode, CurrencyName = @CurrencyName WHERE CurrencyID = @CurrencyID";
                         cmd = new SqlCommand(query, conn);
                         cmd.Parameters.AddWithValue("@CurrencyID", Convert.ToInt32(txtCurrencyID.Text));
                     }
                     else
                     {
-                        // --- INSERT new currency ---
-                        // Check if currency code already exists
                         string checkQuery = "SELECT COUNT(*) FROM Currencies WHERE CurrencyCode = @CurrencyCode";
                         using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
                         {
@@ -193,8 +178,8 @@ namespace ExchangeShopApp
                     if (result > 0)
                     {
                         MessageBox.Show($"Currency {(isUpdate ? "updated" : "saved")} successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LoadCurrencies();   // Refresh the grid
-                        ClearFormFields();  // Clear fields for next operation
+                        LoadCurrencies();
+                        ClearFormFields();
                     }
                     else
                     {
@@ -238,8 +223,8 @@ namespace ExchangeShopApp
                             if (result > 0)
                             {
                                 MessageBox.Show("Currency deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LoadCurrencies();   // Refresh the grid
-                                ClearFormFields();  // Clear fields
+                                LoadCurrencies();
+                                ClearFormFields();
                             }
                             else
                             {
@@ -250,8 +235,7 @@ namespace ExchangeShopApp
                 }
                 catch (SqlException sqlEx)
                 {
-                    // Check for foreign key constraint violation (e.g., if currency is used in Transactions or ExchangeRates)
-                    if (sqlEx.Number == 547) // SQL Server error code for foreign key violation
+                    if (sqlEx.Number == 547)
                     {
                         MessageBox.Show("Cannot delete this currency as it is being used in other records (e.g., transactions, exchange rates).", "Deletion Blocked", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

@@ -109,7 +109,7 @@ namespace ExchangeShopApp
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = "SELECT TransactionID, UserID, FromCurrencyID, ToCurrencyID, AmountFrom, AmountTo, Rate, TransactionDate, TransactionType FROM Transactions"; // Adjusted query based on your Transaction entity
+                    string query = "SELECT TransactionID, UserID, FromCurrencyID, ToCurrencyID, AmountFrom, AmountTo, Rate, TransactionDate, TransactionType FROM Transactions";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())

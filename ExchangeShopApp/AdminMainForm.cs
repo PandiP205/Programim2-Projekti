@@ -36,17 +36,21 @@ namespace ExchangeShopApp
 
         private void usersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Manage Users form will open here.");
+            ManageUsersForm manageUsersForm = new ManageUsersForm();
+            manageUsersForm.ShowDialog(this);
         }
 
         private void currenciesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Manage Currencies form will open here.");
+            ManageCurrenciesForm manageCurrenciesForm = new ManageCurrenciesForm();
+            manageCurrenciesForm.ShowDialog(this);
         }
 
         private void exchangeRatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Manage Exchange Rates form will open here.");
+            ManageExchangeRatesForm ratesForm = new ManageExchangeRatesForm();
+
+            ratesForm.ShowDialog(this);
         }
 
         private void viewHistoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -56,7 +60,6 @@ namespace ExchangeShopApp
         }
         private void downloadReportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Retrieve your transactions; replace GetTransactions with your data logic.
             List<Transaction> transactions = GetTransactions();
 
             if (transactions == null || transactions.Count == 0)
@@ -74,9 +77,7 @@ namespace ExchangeShopApp
                 {
                     using (StreamWriter sw = new StreamWriter(sfd.FileName))
                     {
-                        // Write CSV header:
                         sw.WriteLine("TransactionID,UserID,TransactionType,CustomerName,ForeignCurrencyID,AmountForeign,AmountLocal,ExchangeRateApplied,TransactionDate,ReceiptNotes");
-                        // Write a CSV line for each transaction:
                         foreach (var t in transactions)
                         {
                             sw.WriteLine($"{t.TransactionID},{t.UserID},{t.TransactionType},{t.CustomerName},{t.ForeignCurrencyID},{t.AmountForeign},{t.AmountLocal},{t.ExchangeRateApplied},{t.TransactionDate},{t.ReceiptNotes}");
@@ -91,7 +92,6 @@ namespace ExchangeShopApp
             }
         }
 
-        // Sample method to simulate transaction retrieval - replace with your own data access.
 
         public List<Transaction> GetTransactions()
         {
@@ -109,27 +109,24 @@ namespace ExchangeShopApp
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // Include TransactionID in your SELECT to match your mapping.
-                    string query = "SELECT TransactionID, UserID, FromCurrencyID, ToCurrencyID, AmountFrom, AmountTo, Rate, TransactionDate, TransactionType FROM Transactions";
+                    string query = "SELECT TransactionID, UserID, FromCurrencyID, ToCurrencyID, AmountFrom, AmountTo, Rate, TransactionDate, TransactionType FROM Transactions"; // Adjusted query based on your Transaction entity
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                // Map the database columns to your Transaction model.
                                 Transaction t = new Transaction
                                 {
-                                    // Use GetInt64 because TransactionID is a long.
-                                    TransactionID = Convert.ToInt64(reader.GetInt32(0)),
-                                    UserID = reader.GetInt32(1),
+                                    TransactionID = Convert.ToInt64(reader["TransactionID"]),
+                                    UserID = Convert.ToInt32(reader["UserID"]),
                                     CustomerName = string.Empty,
-                                    ForeignCurrencyID = reader.GetInt32(2),
-                                    AmountForeign = reader.GetDecimal(4),
-                                    AmountLocal = reader.GetDecimal(5),
-                                    ExchangeRateApplied = reader.GetDecimal(6),
-                                    TransactionDate = reader.GetDateTime(7),
-                                    TransactionType = reader.GetString(8),
+                                    ForeignCurrencyID = Convert.ToInt32(reader["FromCurrencyID"]),
+                                    AmountForeign = Convert.ToDecimal(reader["AmountFrom"]),
+                                    AmountLocal = Convert.ToDecimal(reader["AmountTo"]),
+                                    ExchangeRateApplied = Convert.ToDecimal(reader["Rate"]),
+                                    TransactionDate = Convert.ToDateTime(reader["TransactionDate"]),
+                                    TransactionType = reader["TransactionType"].ToString(),
                                     ReceiptNotes = string.Empty
                                 };
                                 transactions.Add(t);

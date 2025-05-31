@@ -13,5 +13,7 @@ namespace ExchangeShopApp.Entities
         public int RoleID { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginDate { get; set; }
+        public bool IsActive { get; set; }
+        public string RoleName { get; set; }
     }
 }
